@@ -25,7 +25,7 @@ st.set_page_config(
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 
-BUILD_ID = "NOTICIA_SELECCION_HONOR_2026_V6"
+BUILD_ID = "AJUSTE_HERO_Y_FILTRO_NOTICIAS_V7"
 print(f"[ANFA] Build: {BUILD_ID} | Archivo ejecutado: {Path(__file__).resolve()}")
 
 PREFERRED_EXCEL_NAMES = [
@@ -246,7 +246,7 @@ st.markdown(
         background: linear-gradient(120deg, #071d3a, #0d4a8d);
         border-radius: 16px;
         min-height: 82px;
-        padding: 12px 24px;
+        padding: 18px 24px 16px;
         color: white;
         margin-bottom: 14px;
         box-shadow: 0 8px 22px rgba(9,42,85,.16);
@@ -254,28 +254,36 @@ st.markdown(
         align-items: center;
     }
     .hero-content {
+        width: 100%;
         display: flex;
-        align-items: center;
+        flex-direction: column;
+        justify-content: center;
     }
     .hero h1 {
         margin: 0;
         font-size: clamp(1.65rem, 2.5vw, 2.8rem);
         line-height: 1.02;
     }
+    .hero-footer {
+        width: 100%;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 18px;
+        margin-top: 12px;
+    }
     .hero p {
-        margin: 7px 0 0;
+        margin: 0;
         opacity: .9;
         font-size: .98rem;
     }
-    .badge {
-        display: inline-block;
-        background: #e6b643;
-        color: #092a55;
-        border-radius: 999px;
-        padding: 4px 9px;
-        font-size: .82rem;
-        font-weight: 800;
-        margin-bottom: 6px;
+    .hero-year {
+        margin-left: auto;
+        color: #f4c542;
+        font-size: 1rem;
+        line-height: 1;
+        font-weight: 900;
+        white-space: nowrap;
     }
     .section-title {
         color: #092a55;
@@ -1164,10 +1172,10 @@ st.markdown(
     """
     <div class="hero">
       <div class="hero-content">
-        <div>
-          <div class="badge">TEMPORADA 2026</div>
-          <h1>Asociación de Fútbol Nacimiento</h1>
+        <h1>Asociación de Fútbol Nacimiento</h1>
+        <div class="hero-footer">
           <p>Fixture, resultados, posiciones y gestión de las competencias locales.</p>
+          <div class="hero-year">2026</div>
         </div>
       </div>
     </div>
@@ -1185,12 +1193,17 @@ if menu == "Fixture":
     )
 
 default_index = available_series.index("Primera Adulta") if "Primera Adulta" in available_series else 0
-serie = st.selectbox(
-    "Serie",
-    available_series,
-    index=default_index,
-    format_func=lambda value: value.upper(),
-)
+serie = None
+
+# En Noticias el filtro se muestra después de la fotografía de la Serie Honor.
+if menu != "Noticias":
+    serie = st.selectbox(
+        "Serie",
+        available_series,
+        index=default_index,
+        format_func=lambda value: value.upper(),
+        key="series_filter",
+    )
 
 if menu not in {"Fixture", "Noticias"}:
     st.markdown(
@@ -1217,6 +1230,14 @@ if menu == "Noticias":
             """,
             unsafe_allow_html=True,
         )
+
+    serie = st.selectbox(
+        "Serie",
+        available_series,
+        index=default_index,
+        format_func=lambda value: value.upper(),
+        key="series_filter",
+    )
 
     filtered = matches[matches["serie"] == serie].copy()
     played_mask = (
