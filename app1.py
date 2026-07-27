@@ -25,7 +25,7 @@ st.set_page_config(
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 
-BUILD_ID = "AJUSTE_TITULO_Y_FOTO_HONOR_V8"
+BUILD_ID = "RESPONSIVE_MOVIL_SIN_AFECTAR_ESCRITORIO_V9"
 print(f"[ANFA] Build: {BUILD_ID} | Archivo ejecutado: {Path(__file__).resolve()}")
 
 PREFERRED_EXCEL_NAMES = [
@@ -541,6 +541,291 @@ st.markdown(
         .hero {
             padding-left: 24px;
             padding-right: 24px;
+        }
+    }
+
+    /* -------------------------------------------------------------
+       VISTA MÓVIL
+       Estas reglas se activan solo en teléfonos y no modifican PC.
+       ------------------------------------------------------------- */
+    @media (max-width: 768px) {
+        :root {
+            --sidebar-fixed-width: min(86vw, 18rem);
+        }
+
+        html, body, #root, .stApp,
+        [data-testid="stAppViewContainer"] {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow-x: hidden !important;
+        }
+
+        /* El contenido ocupa todo el ancho cuando el menú está cerrado. */
+        [data-testid="stMain"] {
+            width: 100vw !important;
+            max-width: 100vw !important;
+            min-width: 0 !important;
+            margin-left: 0 !important;
+            padding-left: 0 !important;
+            overflow-x: hidden !important;
+        }
+        [data-testid="stMain"] > div,
+        [data-testid="stMain"] .block-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+        }
+        .block-container {
+            padding: .7rem .75rem 2rem !important;
+        }
+
+        /* Menú lateral móvil tipo panel deslizable. */
+        [data-testid="stSidebar"] {
+            width: min(86vw, 18rem) !important;
+            min-width: min(86vw, 18rem) !important;
+            max-width: min(86vw, 18rem) !important;
+            box-shadow: 8px 0 24px rgba(0,0,0,.28) !important;
+        }
+        [data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
+            padding: .55rem 1rem 7.5rem !important;
+        }
+        [data-testid="stSidebarCollapseButton"],
+        [data-testid="collapsedControl"] {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            width: 42px !important;
+            height: 42px !important;
+            z-index: 2002 !important;
+        }
+        [data-testid="collapsedControl"] {
+            position: fixed !important;
+            top: .55rem !important;
+            left: .55rem !important;
+            background: #092a55 !important;
+            border: 1px solid rgba(255,255,255,.28) !important;
+            border-radius: 11px !important;
+            box-shadow: 0 4px 14px rgba(0,0,0,.22) !important;
+        }
+        [data-testid="collapsedControl"] * {
+            color: white !important;
+        }
+        .sidebar-season {
+            position: absolute !important;
+            left: 1rem !important;
+            right: 1rem !important;
+            bottom: 1rem !important;
+            width: auto !important;
+        }
+        .sidebar-logo-wrap {
+            margin: 2px 0 10px !important;
+        }
+        .sidebar-logo {
+            width: 112px !important;
+            height: 112px !important;
+        }
+        [data-testid="stSidebar"] div[role="radiogroup"] {
+            gap: .24rem !important;
+        }
+        [data-testid="stSidebar"] div[role="radiogroup"] > label {
+            min-height: 40px !important;
+            padding: .3rem 0 !important;
+        }
+
+        /* Encabezado compacto y legible. */
+        .hero {
+            min-height: auto !important;
+            padding: 12px 14px 11px !important;
+            border-radius: 12px !important;
+            margin-bottom: 10px !important;
+        }
+        .hero h1 {
+            font-size: 1.15rem !important;
+            line-height: 1.15 !important;
+        }
+        .hero-footer {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 5px !important;
+            margin-top: 6px !important;
+        }
+        .hero p {
+            font-size: .72rem !important;
+            line-height: 1.3 !important;
+        }
+        .hero-year {
+            align-self: flex-end !important;
+            margin-left: 0 !important;
+            font-size: .78rem !important;
+        }
+
+        .section-title,
+        .fixture-page-title {
+            font-size: 1.32rem !important;
+            margin: 8px 0 11px !important;
+        }
+        .series-summary {
+            padding: 11px 13px !important;
+            margin-bottom: 12px !important;
+        }
+        .featured-news-card {
+            width: 100% !important;
+            margin: 2px 0 13px !important;
+            border-radius: 13px !important;
+        }
+        .featured-news-caption {
+            padding: 10px 12px !important;
+            font-size: .95rem !important;
+        }
+
+        /* Las columnas de contenido se apilan en móvil. */
+        [data-testid="stHorizontalBlock"] {
+            flex-wrap: wrap !important;
+            gap: .65rem !important;
+        }
+        [data-testid="stHorizontalBlock"] > [data-testid="column"] {
+            flex: 1 1 100% !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+        }
+
+        /* Navegación anterior/título/siguiente del fixture en una sola fila. */
+        [data-testid="stHorizontalBlock"]:has([data-testid="stButton"]):not(:has(> [data-testid="column"]:nth-child(4))) {
+            display: grid !important;
+            grid-template-columns: 48px minmax(0, 1fr) 48px !important;
+            align-items: center !important;
+            gap: .4rem !important;
+        }
+        [data-testid="stHorizontalBlock"]:has([data-testid="stButton"]):not(:has(> [data-testid="column"]:nth-child(4))) > [data-testid="column"] {
+            width: auto !important;
+            max-width: none !important;
+            min-width: 0 !important;
+        }
+
+        /* Fechas del fixture desplazables horizontalmente, sin comprimirlas. */
+        [data-testid="stHorizontalBlock"]:has(> [data-testid="column"]:nth-child(4)):has([data-testid="stButton"]) {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            gap: .45rem !important;
+            padding: 2px 1px 7px !important;
+            scroll-snap-type: x proximity;
+            scrollbar-width: thin;
+        }
+        [data-testid="stHorizontalBlock"]:has(> [data-testid="column"]:nth-child(4)):has([data-testid="stButton"]) > [data-testid="column"] {
+            flex: 0 0 60px !important;
+            width: 60px !important;
+            min-width: 60px !important;
+            max-width: 60px !important;
+            scroll-snap-align: start;
+        }
+        [data-testid="stMain"] [data-testid="stButton"] button {
+            min-height: 43px !important;
+            border-radius: 11px !important;
+            padding-left: .45rem !important;
+            padding-right: .45rem !important;
+        }
+
+        .fixture-round-header {
+            min-height: 54px !important;
+            padding: 5px 0 !important;
+        }
+        .fixture-round-kicker {
+            font-size: .68rem !important;
+            margin-bottom: 5px !important;
+        }
+        .fixture-round-title {
+            font-size: 1.35rem !important;
+        }
+        .fixture-program-title {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 6px !important;
+            padding: 13px 14px !important;
+            margin: 16px 0 11px !important;
+            border-radius: 13px !important;
+        }
+        .fixture-program-name {
+            font-size: 1rem !important;
+        }
+        .fixture-program-count {
+            font-size: .78rem !important;
+        }
+
+        .match-card, .club-card, .notice-card, .document-card {
+            border-radius: 13px !important;
+            padding: 13px !important;
+            margin-bottom: 10px !important;
+        }
+        .match-row {
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+            gap: 7px !important;
+        }
+        .team-local,
+        .team-away {
+            font-size: .84rem !important;
+            line-height: 1.2 !important;
+            overflow-wrap: anywhere !important;
+        }
+        .score {
+            min-width: 58px !important;
+            padding: 7px 6px !important;
+            border-radius: 9px !important;
+            font-size: .88rem !important;
+        }
+        .meta {
+            font-size: .74rem !important;
+            line-height: 1.45 !important;
+            padding-top: 9px !important;
+            overflow-wrap: anywhere !important;
+        }
+
+        /* Formularios, tablas y avisos ajustados al ancho del teléfono. */
+        [data-testid="stSelectbox"],
+        [data-testid="stTextInput"],
+        [data-testid="stDataFrame"],
+        [data-testid="stAlert"] {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+        }
+        [data-testid="stDataFrame"] {
+            overflow-x: auto !important;
+        }
+        [data-testid="stDataFrame"] iframe,
+        [data-testid="stDataFrame"] canvas {
+            max-width: 100% !important;
+        }
+        .kpi {
+            min-height: 98px !important;
+            padding: 14px !important;
+        }
+        .kpi-value {
+            font-size: 1.5rem !important;
+        }
+    }
+
+    @media (max-width: 390px) {
+        .block-container {
+            padding-left: .55rem !important;
+            padding-right: .55rem !important;
+        }
+        .hero h1 {
+            font-size: 1.03rem !important;
+        }
+        .hero p {
+            font-size: .68rem !important;
+        }
+        .team-local,
+        .team-away {
+            font-size: .78rem !important;
+        }
+        .score {
+            min-width: 52px !important;
+            font-size: .8rem !important;
         }
     }
     </style>
