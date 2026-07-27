@@ -25,7 +25,7 @@ st.set_page_config(
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 
-BUILD_ID = "MENU_FIJO_SIN_FRANJA_SUPERIOR_V5"
+BUILD_ID = "NOTICIA_SELECCION_HONOR_2026_V6"
 print(f"[ANFA] Build: {BUILD_ID} | Archivo ejecutado: {Path(__file__).resolve()}")
 
 PREFERRED_EXCEL_NAMES = [
@@ -290,6 +290,29 @@ st.markdown(
         padding: 17px;
         margin-bottom: 12px;
         box-shadow: 0 5px 16px rgba(20,45,80,.06);
+    }
+    .featured-news-card {
+        width: min(100%, 720px);
+        margin: 4px auto 22px;
+        background: white;
+        border: 1px solid #dce4ef;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(20,45,80,.10);
+    }
+    .featured-news-card img {
+        display: block;
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+    .featured-news-caption {
+        padding: 16px 20px 18px;
+        color: #092a55;
+        font-size: 1.35rem;
+        line-height: 1.2;
+        font-weight: 900;
+        text-align: center;
     }
     .match-row {
         display: grid;
@@ -566,6 +589,19 @@ def find_sello_file() -> Path | None:
     return candidates[0] if candidates else None
 
 
+def find_honor_file() -> Path | None:
+    """Detecta la fotografía de la Selección Serie Honor en la carpeta principal."""
+    valid_extensions = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp"}
+    candidates = [
+        file
+        for file in BASE_DIR.glob("honor*")
+        if file.is_file() and file.suffix.lower() in valid_extensions
+    ]
+    if not candidates:
+        return None
+    return max(candidates, key=lambda file: file.stat().st_mtime)
+
+
 def image_data_uri(path: Path | None) -> str:
     if path is None or not path.exists():
         return ""
@@ -802,6 +838,7 @@ def load_workbook_data(excel_path: str, modified_time: float) -> dict[str, pd.Da
 excel_file = find_excel_file()
 logo_file = find_logo_file()
 sello_file = find_sello_file()
+honor_file = find_honor_file()
 
 if excel_file is None:
     st.error(
@@ -1066,6 +1103,7 @@ def format_currency(value: object) -> str:
 # -----------------------------------------------------------------------------
 logo_uri = logo_data_uri_without_white_border(logo_file)
 sello_uri = image_data_uri(sello_file)
+honor_uri = image_data_uri(honor_file)
 
 if sello_uri:
     st.markdown(
@@ -1169,6 +1207,17 @@ if menu not in {"Fixture", "Noticias"}:
 # PÁGINAS
 # -----------------------------------------------------------------------------
 if menu == "Noticias":
+    if honor_uri:
+        st.markdown(
+            f"""
+            <div class="featured-news-card">
+                <img src="{honor_uri}" alt="Selección Serie Honor 2026">
+                <div class="featured-news-caption">Selección Serie Honor 2026</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
     filtered = matches[matches["serie"] == serie].copy()
     played_mask = (
         finalized_mask(filtered["estado"])
