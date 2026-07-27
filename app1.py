@@ -25,7 +25,7 @@ st.set_page_config(
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 
-BUILD_ID = "CLUBES_UNA_FILA_SIN_FILTROS_V10"
+BUILD_ID = "CLUBES_LISTADO_VERTICAL_LOGO_FIJO_V11"
 print(f"[ANFA] Build: {BUILD_ID} | Archivo ejecutado: {Path(__file__).resolve()}")
 
 PREFERRED_EXCEL_NAMES = [
@@ -301,21 +301,37 @@ st.markdown(
         box-shadow: 0 5px 16px rgba(20,45,80,.06);
     }
     .clubs-single-row {
-        display: grid;
-        grid-auto-flow: column;
-        grid-auto-columns: minmax(220px, 1fr);
-        gap: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
         width: 100%;
-        overflow-x: auto;
-        overflow-y: hidden;
-        padding: 2px 2px 12px;
-        scroll-snap-type: x proximity;
-        scrollbar-width: thin;
+        overflow: visible;
+        padding: 2px 0 12px;
     }
     .clubs-single-row .club-card {
-        min-height: 210px;
+        display: grid;
+        grid-template-columns: 48px minmax(180px, .8fr) minmax(170px, 1fr) minmax(190px, 1fr) minmax(190px, 1fr);
+        align-items: center;
+        column-gap: 16px;
+        width: 100%;
+        min-height: 74px;
         margin-bottom: 0;
-        scroll-snap-align: start;
+        padding: 13px 18px;
+    }
+    .clubs-single-row .club-card > div:first-child {
+        font-size: 1.7rem !important;
+        line-height: 1;
+        text-align: center;
+    }
+    .clubs-single-row .club-card h3 {
+        margin: 0 !important;
+        font-size: 1.08rem;
+        line-height: 1.2;
+    }
+    .clubs-single-row .club-card > div:not(:first-child) {
+        color: #3f4856;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
     }
     .featured-news-card {
         width: min(100%, 312px);
@@ -421,7 +437,15 @@ st.markdown(
         min-height: 100vh !important;
         overflow-y: auto !important;
         overscroll-behavior: contain;
-        padding: .45rem 1rem 145px !important;
+        padding: 0 1rem 145px !important;
+    }
+    [data-testid="stSidebarHeader"] {
+        height: 0 !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        overflow: visible !important;
     }
     [data-testid="stSidebar"] * { color: white; }
     [data-testid="stSidebar"] div[role="radiogroup"] {
@@ -456,13 +480,18 @@ st.markdown(
     [data-testid="stSidebarCollapseButton"],
     [data-testid="collapsedControl"] { display: none !important; }
     .sidebar-logo-wrap {
+        position: sticky;
+        top: 0;
+        z-index: 1003;
         display: flex;
         justify-content: center;
-        margin: 0 0 10px;
+        margin: 0 0 6px;
+        padding: 2px 0 4px;
+        background: #071d3a;
     }
     .sidebar-logo {
-        width: 168px;
-        height: 168px;
+        width: 160px;
+        height: 160px;
         object-fit: contain;
         border-radius: 50%;
         background: transparent;
@@ -604,7 +633,12 @@ st.markdown(
             box-shadow: 8px 0 24px rgba(0,0,0,.28) !important;
         }
         [data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
-            padding: .55rem 1rem 7.5rem !important;
+            padding: 0 1rem 7.5rem !important;
+        }
+        [data-testid="stSidebarHeader"] {
+            height: 48px !important;
+            min-height: 48px !important;
+            padding: .3rem .45rem !important;
         }
         [data-testid="stSidebarCollapseButton"],
         [data-testid="collapsedControl"] {
@@ -636,7 +670,9 @@ st.markdown(
             width: auto !important;
         }
         .sidebar-logo-wrap {
-            margin: 2px 0 10px !important;
+            top: 48px !important;
+            margin: 0 0 8px !important;
+            padding: 2px 0 4px !important;
         }
         .sidebar-logo {
             width: 112px !important;
@@ -778,13 +814,31 @@ st.markdown(
             margin-bottom: 10px !important;
         }
         .clubs-single-row {
-            grid-auto-columns: minmax(240px, 82vw) !important;
+            display: flex !important;
+            flex-direction: column !important;
             gap: .65rem !important;
             padding-bottom: 10px !important;
         }
         .clubs-single-row .club-card {
-            min-height: 190px !important;
+            display: grid !important;
+            grid-template-columns: 42px minmax(0, 1fr) !important;
+            gap: 7px 10px !important;
+            min-height: 0 !important;
             margin-bottom: 0 !important;
+            padding: 12px 13px !important;
+        }
+        .clubs-single-row .club-card > div:first-child {
+            grid-row: 1 / span 4;
+            align-self: start;
+            font-size: 1.45rem !important;
+        }
+        .clubs-single-row .club-card h3 {
+            grid-column: 2;
+            font-size: 1rem !important;
+        }
+        .clubs-single-row .club-card > div:not(:first-child) {
+            grid-column: 2;
+            font-size: .84rem;
         }
         .match-row {
             grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
