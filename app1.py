@@ -25,7 +25,7 @@ st.set_page_config(
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 
-BUILD_ID = "RESPONSIVE_MOVIL_SIN_AFECTAR_ESCRITORIO_V9"
+BUILD_ID = "CLUBES_UNA_FILA_SIN_FILTROS_V10"
 print(f"[ANFA] Build: {BUILD_ID} | Archivo ejecutado: {Path(__file__).resolve()}")
 
 PREFERRED_EXCEL_NAMES = [
@@ -299,6 +299,23 @@ st.markdown(
         padding: 17px;
         margin-bottom: 12px;
         box-shadow: 0 5px 16px rgba(20,45,80,.06);
+    }
+    .clubs-single-row {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(220px, 1fr);
+        gap: 14px;
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 2px 2px 12px;
+        scroll-snap-type: x proximity;
+        scrollbar-width: thin;
+    }
+    .clubs-single-row .club-card {
+        min-height: 210px;
+        margin-bottom: 0;
+        scroll-snap-align: start;
     }
     .featured-news-card {
         width: min(100%, 520px);
@@ -759,6 +776,15 @@ st.markdown(
             border-radius: 13px !important;
             padding: 13px !important;
             margin-bottom: 10px !important;
+        }
+        .clubs-single-row {
+            grid-auto-columns: minmax(240px, 82vw) !important;
+            gap: .65rem !important;
+            padding-bottom: 10px !important;
+        }
+        .clubs-single-row .club-card {
+            min-height: 190px !important;
+            margin-bottom: 0 !important;
         }
         .match-row {
             grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
@@ -1482,7 +1508,7 @@ default_index = available_series.index("Primera Adulta") if "Primera Adulta" in 
 serie = None
 
 # En Noticias el filtro se muestra después de la fotografía de la Serie Honor.
-if menu != "Noticias":
+if menu not in {"Noticias", "Clubes"}:
     serie = st.selectbox(
         "Serie",
         available_series,
@@ -1491,7 +1517,7 @@ if menu != "Noticias":
         key="series_filter",
     )
 
-if menu not in {"Fixture", "Noticias"}:
+if menu not in {"Fixture", "Noticias", "Clubes"}:
     st.markdown(
         f"""
         <div class="series-summary">
@@ -1741,29 +1767,35 @@ elif menu == "Posiciones":
 
 elif menu == "Clubes":
     st.markdown('<div class="section-title">Clubes asociados</div>', unsafe_allow_html=True)
-    query = st.text_input("Buscar club")
+
     dataframe = clubs.copy()
+    dataframe["_orden_club"] = (
+        dataframe["club"]
+        .astype("string")
+        .fillna("")
+        .str.normalize("NFKD")
+        .str.encode("ascii", errors="ignore")
+        .str.decode("ascii")
+        .str.upper()
+    )
+    dataframe = dataframe.sort_values("_orden_club").drop(columns="_orden_club")
 
-    if query:
-        dataframe = dataframe[
-            dataframe["club"].astype(str).str.contains(query, case=False, na=False)
-        ]
+    # Se genera el HTML sin sangrías ni saltos iniciales. Markdown interpretaba
+    # las tarjetas siguientes como bloques de código y mostraba las etiquetas.
+    club_cards = []
+    for _, club in dataframe.iterrows():
+        club_cards.append(
+            '<div class="club-card">'
+            '<div style="font-size:2rem">🛡️</div>'
+            f'<h3 style="color:#092a55;margin:7px 0">{safe_html(club.get("club"))}</h3>'
+            f'<div>📍 {safe_html(club.get("estadio"), "Por definir")}</div>'
+            f'<div>📅 Fundación: {safe_html(club.get("fundacion"), "Por definir")}</div>'
+            f'<div>👤 Presidente: {safe_html(club.get("presidente"), "Por definir")}</div>'
+            '</div>'
+        )
 
-    columns = st.columns(3)
-    for index, (_, club) in enumerate(dataframe.iterrows()):
-        with columns[index % 3]:
-            st.markdown(
-                f"""
-                <div class="club-card">
-                  <div style="font-size:2rem">🛡️</div>
-                  <h3 style="color:#092a55;margin:7px 0">{safe_html(club.get('club'))}</h3>
-                  <div>📍 {safe_html(club.get('estadio'), 'Por definir')}</div>
-                  <div>📅 Fundación: {safe_html(club.get('fundacion'), 'Por definir')}</div>
-                  <div>👤 Presidente: {safe_html(club.get('presidente'), 'Por definir')}</div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+    clubs_html = '<div class="clubs-single-row">' + ''.join(club_cards) + '</div>'
+    st.markdown(clubs_html, unsafe_allow_html=True)
 
 elif menu == "Jugadores":
     st.markdown('<div class="section-title">Nómina de jugadores</div>', unsafe_allow_html=True)
