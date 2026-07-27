@@ -25,7 +25,7 @@ st.set_page_config(
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 
-BUILD_ID = "AJUSTE_HERO_Y_FILTRO_NOTICIAS_V7"
+BUILD_ID = "AJUSTE_TITULO_Y_FOTO_HONOR_V8"
 print(f"[ANFA] Build: {BUILD_ID} | Archivo ejecutado: {Path(__file__).resolve()}")
 
 PREFERRED_EXCEL_NAMES = [
@@ -244,12 +244,12 @@ st.markdown(
     }
     .hero {
         background: linear-gradient(120deg, #071d3a, #0d4a8d);
-        border-radius: 16px;
-        min-height: 82px;
-        padding: 18px 24px 16px;
+        border-radius: 14px;
+        min-height: 58px;
+        padding: 10px 18px 9px;
         color: white;
-        margin-bottom: 14px;
-        box-shadow: 0 8px 22px rgba(9,42,85,.16);
+        margin-bottom: 10px;
+        box-shadow: 0 6px 18px rgba(9,42,85,.14);
         display: flex;
         align-items: center;
     }
@@ -261,26 +261,27 @@ st.markdown(
     }
     .hero h1 {
         margin: 0;
-        font-size: clamp(1.65rem, 2.5vw, 2.8rem);
-        line-height: 1.02;
+        font-size: clamp(1.25rem, 1.8vw, 1.9rem);
+        line-height: 1;
     }
     .hero-footer {
         width: 100%;
         display: flex;
         align-items: flex-end;
         justify-content: space-between;
-        gap: 18px;
-        margin-top: 12px;
+        gap: 14px;
+        margin-top: 6px;
     }
     .hero p {
         margin: 0;
         opacity: .9;
-        font-size: .98rem;
+        font-size: .78rem;
+        line-height: 1.1;
     }
     .hero-year {
         margin-left: auto;
         color: #f4c542;
-        font-size: 1rem;
+        font-size: .82rem;
         line-height: 1;
         font-weight: 900;
         white-space: nowrap;
@@ -300,13 +301,13 @@ st.markdown(
         box-shadow: 0 5px 16px rgba(20,45,80,.06);
     }
     .featured-news-card {
-        width: min(100%, 720px);
-        margin: 4px auto 22px;
+        width: min(100%, 520px);
+        margin: 2px auto 16px;
         background: white;
         border: 1px solid #dce4ef;
-        border-radius: 18px;
+        border-radius: 15px;
         overflow: hidden;
-        box-shadow: 0 8px 24px rgba(20,45,80,.10);
+        box-shadow: 0 6px 18px rgba(20,45,80,.09);
     }
     .featured-news-card img {
         display: block;
@@ -315,10 +316,10 @@ st.markdown(
         object-fit: cover;
     }
     .featured-news-caption {
-        padding: 16px 20px 18px;
+        padding: 11px 16px 12px;
         color: #092a55;
-        font-size: 1.35rem;
-        line-height: 1.2;
+        font-size: 1.05rem;
+        line-height: 1.15;
         font-weight: 900;
         text-align: center;
     }
