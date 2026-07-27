@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pandas as pd
 import streamlit as st
-from PIL import Image
+from PIL import Image, ImageOps
 
 
 # -----------------------------------------------------------------------------
@@ -25,7 +25,7 @@ st.set_page_config(
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 
-BUILD_ID = "CLUBES_LISTADO_VERTICAL_LOGO_FIJO_V11"
+BUILD_ID = "AJUSTE_SSENIOR_ANCHA_TABLA_COMPACTA_V15"
 print(f"[ANFA] Build: {BUILD_ID} | Archivo ejecutado: {Path(__file__).resolve()}")
 
 PREFERRED_EXCEL_NAMES = [
@@ -333,20 +333,44 @@ st.markdown(
         line-height: 1.35;
         overflow-wrap: anywhere;
     }
-    .featured-news-card {
-        width: min(100%, 312px);
+    .featured-news-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 312px) minmax(0, 440px);
+        justify-content: center;
+        align-items: start;
+        gap: 18px;
+        width: 100%;
         margin: 2px auto 16px;
+    }
+    .featured-news-card {
+        width: 100%;
+        margin: 0 auto;
         background: white;
         border: 1px solid #dce4ef;
         border-radius: 15px;
         overflow: hidden;
         box-shadow: 0 6px 18px rgba(20,45,80,.09);
     }
+    .featured-news-card--honor {
+        max-width: 312px;
+    }
+    .featured-news-card--ssenior {
+        max-width: 440px;
+    }
     .featured-news-card img {
         display: block;
         width: 100%;
         height: auto;
+        object-position: center center;
+    }
+    .featured-news-card--honor img {
+        aspect-ratio: 6 / 7;
         object-fit: cover;
+    }
+    .featured-news-card--ssenior img {
+        aspect-ratio: auto;
+        object-fit: contain;
+        background: white;
     }
     .featured-news-caption {
         padding: 11px 16px 12px;
@@ -356,6 +380,51 @@ st.markdown(
         font-weight: 900;
         text-align: center;
     }
+    .home-standings-wrap {
+        width: 100%;
+        overflow: hidden;
+        background: rgba(255,255,255,.97);
+        border: 1px solid #dce4ef;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(20,45,80,.05);
+    }
+    .home-standings-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        color: #29384c;
+        font-size: clamp(.65rem, .74vw, .78rem);
+    }
+    .home-standings-table th,
+    .home-standings-table td {
+        padding: 6px 2px;
+        text-align: center !important;
+        vertical-align: middle !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        border-right: 1px solid #e7ebf1;
+        border-bottom: 1px solid #e7ebf1;
+        line-height: 1.15;
+    }
+    .home-standings-table th {
+        background: #f4f6f9;
+        color: #738198;
+        font-weight: 700;
+    }
+    .home-standings-table th:last-child,
+    .home-standings-table td:last-child {
+        border-right: 0;
+    }
+    .home-standings-table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+    .home-standings-table th:nth-child(1),
+    .home-standings-table td:nth-child(1) { width: 7%; }
+    .home-standings-table th:nth-child(2),
+    .home-standings-table td:nth-child(2) { width: 22%; }
+    .home-standings-table th:nth-child(n+3),
+    .home-standings-table td:nth-child(n+3) { width: 8.875%; }
     .match-row {
         display: grid;
         grid-template-columns: 1fr auto 1fr;
@@ -722,14 +791,27 @@ st.markdown(
             padding: 11px 13px !important;
             margin-bottom: 12px !important;
         }
-        .featured-news-card {
-            width: min(100%, 312px) !important;
+        .featured-news-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: .65rem !important;
             margin: 2px auto 13px !important;
+        }
+        .featured-news-card {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 auto !important;
             border-radius: 13px !important;
         }
         .featured-news-caption {
             padding: 10px 12px !important;
             font-size: .95rem !important;
+        }
+        .home-standings-table {
+            font-size: .61rem !important;
+        }
+        .home-standings-table th,
+        .home-standings-table td {
+            padding: 5px 1px !important;
         }
 
         /* Las columnas de contenido se apilan en móvil. */
@@ -976,6 +1058,19 @@ def find_honor_file() -> Path | None:
     return max(candidates, key=lambda file: file.stat().st_mtime)
 
 
+def find_ssenior_file() -> Path | None:
+    """Detecta la fotografía de la Selección Super Senior en la carpeta principal."""
+    valid_extensions = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp"}
+    candidates = [
+        file
+        for file in BASE_DIR.glob("ssenior*")
+        if file.is_file() and file.suffix.lower() in valid_extensions
+    ]
+    if not candidates:
+        return None
+    return max(candidates, key=lambda file: file.stat().st_mtime)
+
+
 def image_data_uri(path: Path | None) -> str:
     if path is None or not path.exists():
         return ""
@@ -983,6 +1078,33 @@ def image_data_uri(path: Path | None) -> str:
     mime_type = mime_type or "image/png"
     encoded = base64.b64encode(path.read_bytes()).decode("utf-8")
     return f"data:{mime_type};base64,{encoded}"
+
+
+def photo_data_uri(path: Path | None, max_width: int = 900) -> str:
+    """Convierte fotografías a un JPEG liviano para evitar que Streamlit rompa el HTML."""
+    if path is None or not path.exists():
+        return ""
+
+    try:
+        with Image.open(path) as source:
+            image = ImageOps.exif_transpose(source).convert("RGB")
+
+            if image.width > max_width:
+                new_height = max(1, round(image.height * max_width / image.width))
+                image = image.resize((max_width, new_height), Image.Resampling.LANCZOS)
+
+            buffer = BytesIO()
+            image.save(
+                buffer,
+                format="JPEG",
+                quality=84,
+                optimize=True,
+                progressive=True,
+            )
+            encoded = base64.b64encode(buffer.getvalue()).decode("ascii")
+            return f"data:image/jpeg;base64,{encoded}"
+    except Exception:
+        return image_data_uri(path)
 
 
 def logo_data_uri_without_white_border(path: Path | None) -> str:
@@ -1213,6 +1335,7 @@ excel_file = find_excel_file()
 logo_file = find_logo_file()
 sello_file = find_sello_file()
 honor_file = find_honor_file()
+ssenior_file = find_ssenior_file()
 
 if excel_file is None:
     st.error(
@@ -1477,7 +1600,8 @@ def format_currency(value: object) -> str:
 # -----------------------------------------------------------------------------
 logo_uri = logo_data_uri_without_white_border(logo_file)
 sello_uri = image_data_uri(sello_file)
-honor_uri = image_data_uri(honor_file)
+honor_uri = photo_data_uri(honor_file)
+ssenior_uri = photo_data_uri(ssenior_file)
 
 if sello_uri:
     st.markdown(
@@ -1586,16 +1710,33 @@ if menu not in {"Fixture", "Noticias", "Clubes"}:
 # PÁGINAS
 # -----------------------------------------------------------------------------
 if menu == "Noticias":
+    # El HTML se construye sin sangrías ni saltos de línea iniciales.
+    # Streamlit/Markdown interpretaba la segunda tarjeta como bloque de código.
+    featured_cards = []
+
     if honor_uri:
-        st.markdown(
-            f"""
-            <div class="featured-news-card">
-                <img src="{honor_uri}" alt="Selección Serie Honor 2026">
-                <div class="featured-news-caption">Selección Serie Honor 2026</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
+        featured_cards.append(
+            '<div class="featured-news-card featured-news-card--honor">'
+            f'<img src="{honor_uri}" alt="Selección Serie Honor 2026">'
+            '<div class="featured-news-caption">Selección Serie Honor 2026</div>'
+            '</div>'
         )
+
+    if ssenior_uri:
+        featured_cards.append(
+            '<div class="featured-news-card featured-news-card--ssenior">'
+            f'<img src="{ssenior_uri}" alt="Selección Super Senior 2025">'
+            '<div class="featured-news-caption">Selección Super Senior 2025</div>'
+            '</div>'
+        )
+
+    if featured_cards:
+        featured_news_html = (
+            '<div class="featured-news-grid">'
+            + ''.join(featured_cards)
+            + '</div>'
+        )
+        st.markdown(featured_news_html, unsafe_allow_html=True)
 
     serie = st.selectbox(
         "Serie",
@@ -1612,7 +1753,7 @@ if menu == "Noticias":
         & filtered["goles_visita"].notna()
     )
     standings = standings_table(serie)
-    left, right = st.columns([1.35, 1.15])
+    left, right = st.columns([1.0, 1.65])
 
     with left:
         st.markdown('<div class="section-title">Próximos partidos</div>', unsafe_allow_html=True)
@@ -1630,26 +1771,35 @@ if menu == "Noticias":
         if standings.empty:
             st.info("Aún no existen clubes inscritos o partidos asignados a esta serie.")
         else:
-            home_table = standings.head(8)
-            st.dataframe(
-                home_table,
-                hide_index=True,
-                use_container_width=True,
-                height=38 + (len(home_table) * 35),
-                column_config={
-                    "Pos.": st.column_config.NumberColumn(width="small"),
-                    "Club": st.column_config.TextColumn(width="medium"),
-                    "PJ": st.column_config.NumberColumn(width="small"),
-                    "PG": st.column_config.NumberColumn(width="small"),
-                    "PE": st.column_config.NumberColumn(width="small"),
-                    "PP": st.column_config.NumberColumn(width="small"),
-                    "GF": st.column_config.NumberColumn(width="small"),
-                    "GC": st.column_config.NumberColumn(width="small"),
-                    "DG": st.column_config.NumberColumn(width="small"),
-                    "DESC": st.column_config.NumberColumn("Desc.", width="small"),
-                    "PTS": st.column_config.NumberColumn(width="small"),
-                },
+            home_table = standings.drop(columns=["DESC"], errors="ignore").head(8)
+            home_columns = ["Pos.", "Club", "PJ", "PG", "PE", "PP", "GF", "GC", "DG", "PTS"]
+            home_table = home_table[[column for column in home_columns if column in home_table.columns]]
+
+            header_html = "".join(
+                f"<th>{safe_html(column)}</th>" for column in home_table.columns
             )
+            rows_html = []
+            for _, position_row in home_table.iterrows():
+                cells = []
+                for column in home_table.columns:
+                    value = position_row[column]
+                    if column != "Club" and pd.notna(value):
+                        try:
+                            value = int(value)
+                        except (TypeError, ValueError):
+                            pass
+                    cells.append(f"<td>{safe_html(value)}</td>")
+                rows_html.append("<tr>" + "".join(cells) + "</tr>")
+
+            standings_html = (
+                '<div class="home-standings-wrap">'
+                '<table class="home-standings-table">'
+                f'<thead><tr>{header_html}</tr></thead>'
+                f'<tbody>{"".join(rows_html)}</tbody>'
+                '</table>'
+                '</div>'
+            )
+            st.markdown(standings_html, unsafe_allow_html=True)
 
     st.markdown('<div class="section-title">Últimas noticias</div>', unsafe_allow_html=True)
     public_news = news.copy()
