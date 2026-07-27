@@ -25,7 +25,7 @@ st.set_page_config(
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 
-BUILD_ID = "MENU_FIJO_CORREGIDO_V3"
+BUILD_ID = "MENU_FIJO_SIN_FRANJA_SUPERIOR_V5"
 print(f"[ANFA] Build: {BUILD_ID} | Archivo ejecutado: {Path(__file__).resolve()}")
 
 PREFERRED_EXCEL_NAMES = [
@@ -146,6 +146,59 @@ st.markdown(
     .stApp { background: #f6f8fc; }
 
     /*
+       Oculta la cabecera, la franja blanca y la barra de herramientas
+       de Streamlit (Share, GitHub, menú, estrella y controles superiores).
+       Se incluyen selectores de distintas versiones de Streamlit para
+       mantener compatibilidad cuando cambia la estructura interna.
+    */
+    header[data-testid="stHeader"],
+    [data-testid="stHeader"],
+    [data-testid="stToolbar"],
+    [data-testid="stAppToolbar"],
+    [data-testid="stHeaderActionElements"],
+    [data-testid="stDecoration"],
+    [data-testid="stStatusWidget"],
+    [data-testid="stMainMenu"],
+    .stAppHeader,
+    .stAppToolbar,
+    div[class*="viewerBadge"],
+    div[class*="styles_viewerBadge"],
+    #MainMenu {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        max-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+    }
+    html, body, #root, .stApp {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    [data-testid="stAppViewContainer"],
+    [data-testid="stAppViewBlockContainer"],
+    [data-testid="stMain"],
+    section.main {
+        top: 0 !important;
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+    }
+    [data-testid="stAppViewContainer"] > .main,
+    [data-testid="stAppViewContainer"] > section {
+        top: 0 !important;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    /*
        El ancho lo administra el contenedor principal de Streamlit.
        No se fuerza un ancho mínimo global, porque eso hacía que la página
        se extendiera por debajo del menú lateral.
@@ -175,7 +228,7 @@ st.markdown(
         width: 100% !important;
         max-width: 100% !important;
         min-width: 0 !important;
-        padding: 1rem 2rem 2.5rem !important;
+        padding: 0 2rem 2.5rem !important;
         margin: 0 !important;
     }
     [data-testid="stHorizontalBlock"] {
