@@ -244,47 +244,38 @@ st.markdown(
     }
     .hero {
         background: linear-gradient(120deg, #071d3a, #0d4a8d);
-        border-radius: 20px;
-        min-height: 190px;
-        padding: 30px 38px;
+        border-radius: 16px;
+        min-height: 82px;
+        padding: 12px 24px;
         color: white;
-        margin-bottom: 20px;
-        box-shadow: 0 12px 30px rgba(9,42,85,.18);
+        margin-bottom: 14px;
+        box-shadow: 0 8px 22px rgba(9,42,85,.16);
         display: flex;
         align-items: center;
     }
     .hero-content {
         display: flex;
         align-items: center;
-        gap: 22px;
-    }
-    .hero-logo {
-        width: 132px;
-        height: 132px;
-        object-fit: contain;
-        flex: 0 0 auto;
-        border-radius: 50%;
-        background: transparent;
-        padding: 0;
     }
     .hero h1 {
         margin: 0;
-        font-size: clamp(2.2rem, 3.4vw, 3.7rem);
-        line-height: 1.05;
+        font-size: clamp(1.65rem, 2.5vw, 2.8rem);
+        line-height: 1.02;
     }
     .hero p {
-        margin: 12px 0 0;
+        margin: 7px 0 0;
         opacity: .9;
-        font-size: 1.12rem;
+        font-size: .98rem;
     }
     .badge {
         display: inline-block;
         background: #e6b643;
         color: #092a55;
         border-radius: 999px;
-        padding: 6px 11px;
+        padding: 4px 9px;
+        font-size: .82rem;
         font-weight: 800;
-        margin-bottom: 10px;
+        margin-bottom: 6px;
     }
     .section-title {
         color: #092a55;
@@ -1131,13 +1122,10 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
 
-logo_html = f'<img class="hero-logo" src="{logo_uri}" alt="Logo ANFA Nacimiento">' if logo_uri else ""
-
 st.markdown(
-    f"""
+    """
     <div class="hero">
       <div class="hero-content">
-        {logo_html}
         <div>
           <div class="badge">TEMPORADA 2026</div>
           <h1>Asociación de Fútbol Nacimiento</h1>
