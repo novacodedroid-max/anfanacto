@@ -25,7 +25,7 @@ st.set_page_config(
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 
-BUILD_ID = "AJUSTE_SSENIOR_ANCHA_TABLA_COMPACTA_V15"
+BUILD_ID = "MENU_MOVIL_VISIBLE_SIN_CAMBIOS_ESCRITORIO_V16"
 print(f"[ANFA] Build: {BUILD_ID} | Archivo ejecutado: {Path(__file__).resolve()}")
 
 PREFERRED_EXCEL_NAMES = [
@@ -675,6 +675,45 @@ st.markdown(
             overflow-x: hidden !important;
         }
 
+        /*
+           Streamlit aloja el botón que abre el menú móvil dentro de su cabecera.
+           La cabecera continúa oculta en escritorio; aquí se recupera solamente
+           como una capa transparente para que el botón hamburguesa sea pulsable.
+        */
+        header[data-testid="stHeader"],
+        [data-testid="stHeader"],
+        .stAppHeader {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: none !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            height: 56px !important;
+            min-height: 56px !important;
+            max-height: 56px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 0 !important;
+            background: transparent !important;
+            overflow: visible !important;
+            z-index: 2100 !important;
+        }
+
+        /* Se mantienen ocultos Share, GitHub y los controles superiores. */
+        [data-testid="stToolbar"],
+        [data-testid="stAppToolbar"],
+        [data-testid="stHeaderActionElements"],
+        [data-testid="stMainMenu"] {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
         /* El contenido ocupa todo el ancho cuando el menú está cerrado. */
         [data-testid="stMain"] {
             width: 100vw !important;
@@ -691,7 +730,7 @@ st.markdown(
             min-width: 0 !important;
         }
         .block-container {
-            padding: .7rem .75rem 2rem !important;
+            padding: 3.65rem .75rem 2rem !important;
         }
 
         /* Menú lateral móvil tipo panel deslizable. */
@@ -700,36 +739,89 @@ st.markdown(
             min-width: min(86vw, 18rem) !important;
             max-width: min(86vw, 18rem) !important;
             box-shadow: 8px 0 24px rgba(0,0,0,.28) !important;
+            z-index: 2200 !important;
         }
         [data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
             padding: 0 1rem 7.5rem !important;
         }
         [data-testid="stSidebarHeader"] {
+            position: relative !important;
             height: 48px !important;
             min-height: 48px !important;
             padding: .3rem .45rem !important;
+            overflow: visible !important;
         }
-        [data-testid="stSidebarCollapseButton"],
+
+        /* Botón para cerrar el menú cuando el panel está abierto. */
+        [data-testid="stSidebarCollapseButton"] {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            position: absolute !important;
+            top: .2rem !important;
+            right: .35rem !important;
+            width: 42px !important;
+            height: 42px !important;
+            transform: none !important;
+            z-index: 2302 !important;
+        }
+
+        /*
+           Botón para abrir el menú cuando está cerrado.
+           Se incluyen los nombres usados por versiones antiguas y nuevas
+           de Streamlit para que funcione también al actualizar la plataforma.
+        */
+        [data-testid="stSidebarCollapsedControl"],
         [data-testid="collapsedControl"] {
             display: flex !important;
             visibility: visible !important;
             opacity: 1 !important;
             pointer-events: auto !important;
-            width: 42px !important;
-            height: 42px !important;
-            z-index: 2002 !important;
-        }
-        [data-testid="collapsedControl"] {
             position: fixed !important;
             top: .55rem !important;
             left: .55rem !important;
+            width: 44px !important;
+            height: 44px !important;
+            min-width: 44px !important;
+            min-height: 44px !important;
+            margin: 0 !important;
+            padding: 0 !important;
             background: #092a55 !important;
             border: 1px solid rgba(255,255,255,.28) !important;
             border-radius: 11px !important;
             box-shadow: 0 4px 14px rgba(0,0,0,.22) !important;
+            overflow: visible !important;
+            transform: none !important;
+            z-index: 2305 !important;
         }
-        [data-testid="collapsedControl"] * {
+        [data-testid="stSidebarCollapsedControl"] button,
+        [data-testid="collapsedControl"] button,
+        [data-testid="stSidebarCollapseButton"] button {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 42px !important;
+            height: 42px !important;
+            min-width: 42px !important;
+            min-height: 42px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            pointer-events: auto !important;
+        }
+        [data-testid="stSidebarCollapsedControl"] *,
+        [data-testid="collapsedControl"] *,
+        [data-testid="stSidebarCollapseButton"] * {
             color: white !important;
+            fill: white !important;
+        }
+
+        /* Al abrir el panel se oculta el botón flotante y queda visible el de cierre. */
+        .stApp:has([data-testid="stSidebar"][aria-expanded="true"])
+        [data-testid="stSidebarCollapsedControl"],
+        .stApp:has([data-testid="stSidebar"][aria-expanded="true"])
+        [data-testid="collapsedControl"] {
+            display: none !important;
         }
         .sidebar-season {
             position: absolute !important;
