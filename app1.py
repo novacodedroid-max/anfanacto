@@ -25,7 +25,7 @@ st.set_page_config(
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 
-BUILD_ID = "ANFA_NACIMIENTO_MOVIL_HEADER_2026_V26"
+BUILD_ID = "ANFA_NACIMIENTO_MOVIL_HEADER_2026_ALINEADO_V27"
 print(f"[ANFA] Build: {BUILD_ID} | Archivo ejecutado: {Path(__file__).resolve()}")
 
 PREFERRED_EXCEL_NAMES = [
@@ -262,8 +262,8 @@ st.markdown(
     .hero-title-row {
         width: 100%;
         display: flex;
-        align-items: center;
-        gap: .7rem;
+        align-items: baseline;
+        gap: .45rem;
         flex-wrap: wrap;
     }
     .hero h1 {
@@ -278,19 +278,19 @@ st.markdown(
         line-height: 1.2;
     }
     .hero-year {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+        display: inline-block;
         flex: 0 0 auto;
+        align-self: baseline;
         color: #f4c542;
-        background: rgba(244, 197, 66, .10);
-        border: 1px solid rgba(244, 197, 66, .55);
-        border-radius: 8px;
-        padding: .24rem .48rem;
-        font-size: .78rem;
-        line-height: 1;
+        background: transparent;
+        border: 0;
+        border-radius: 0;
+        padding: 0;
+        margin: 0;
+        font-size: clamp(.92rem, 1.15vw, 1.15rem);
+        line-height: 1.05;
         font-weight: 900;
-        letter-spacing: .03em;
+        letter-spacing: .02em;
         white-space: nowrap;
     }
     .section-title {
@@ -809,8 +809,8 @@ st.markdown(
         }
         .hero-title-row {
             flex-wrap: nowrap !important;
-            align-items: center !important;
-            gap: .45rem !important;
+            align-items: baseline !important;
+            gap: .35rem !important;
         }
         .hero h1 {
             min-width: 0 !important;
@@ -823,9 +823,14 @@ st.markdown(
             line-height: 1.3 !important;
         }
         .hero-year {
-            padding: .22rem .38rem !important;
-            border-radius: 7px !important;
-            font-size: .69rem !important;
+            align-self: baseline !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            font-size: .82rem !important;
+            line-height: 1.15 !important;
         }
 
         .section-title,
@@ -1739,7 +1744,7 @@ st.markdown(
       <div class="hero-content">
         <div class="hero-title-row">
           <h1>Asociación de Fútbol Nacimiento</h1>
-          <span class="hero-year">[ 2026 ]</span>
+          <span class="hero-year">2026</span>
         </div>
         <p>Fixture, resultados, posiciones y gestión de las competencias locales.</p>
       </div>
