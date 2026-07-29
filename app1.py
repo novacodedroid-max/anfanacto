@@ -659,6 +659,14 @@ st.markdown(
         }
     }
 
+    /*
+       Navegación móvil nativa de Streamlit.
+       El contenedor existe en el DOM, pero permanece oculto en escritorio.
+    */
+    .st-key-mobile_navigation_bar {
+        display: none !important;
+    }
+
     /* -------------------------------------------------------------
        VISTA MÓVIL
        Estas reglas se activan solo en teléfonos y no modifican PC.
@@ -676,45 +684,28 @@ st.markdown(
         }
 
         /*
-           Streamlit aloja el botón que abre el menú móvil dentro de su cabecera.
-           La cabecera continúa oculta en escritorio; aquí se recupera solamente
-           como una capa transparente para que el botón hamburguesa sea pulsable.
+           En teléfonos se usa una navegación propia y siempre visible.
+           Así no dependemos del botón lateral interno de Streamlit, que puede
+           cambiar o desaparecer según la versión o el navegador integrado.
         */
         header[data-testid="stHeader"],
         [data-testid="stHeader"],
-        .stAppHeader {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            pointer-events: none !important;
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            width: 100% !important;
-            height: 56px !important;
-            min-height: 56px !important;
-            max-height: 56px !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            border: 0 !important;
-            background: transparent !important;
-            overflow: visible !important;
-            z-index: 2100 !important;
-        }
-
-        /* Se mantienen ocultos Share, GitHub y los controles superiores. */
+        .stAppHeader,
         [data-testid="stToolbar"],
         [data-testid="stAppToolbar"],
         [data-testid="stHeaderActionElements"],
-        [data-testid="stMainMenu"] {
+        [data-testid="stMainMenu"],
+        [data-testid="stSidebar"],
+        [data-testid="stSidebarCollapsedControl"],
+        [data-testid="stSidebarCollapseButton"],
+        [data-testid="collapsedControl"] {
             display: none !important;
             visibility: hidden !important;
             opacity: 0 !important;
             pointer-events: none !important;
         }
 
-        /* El contenido ocupa todo el ancho cuando el menú está cerrado. */
+        /* El contenido ocupa todo el ancho del teléfono. */
         [data-testid="stMain"] {
             width: 100vw !important;
             max-width: 100vw !important;
@@ -730,121 +721,55 @@ st.markdown(
             min-width: 0 !important;
         }
         .block-container {
-            padding: 3.65rem .75rem 2rem !important;
-        }
-
-        /* Menú lateral móvil tipo panel deslizable. */
-        [data-testid="stSidebar"] {
-            width: min(86vw, 18rem) !important;
-            min-width: min(86vw, 18rem) !important;
-            max-width: min(86vw, 18rem) !important;
-            box-shadow: 8px 0 24px rgba(0,0,0,.28) !important;
-            z-index: 2200 !important;
-        }
-        [data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
-            padding: 0 1rem 7.5rem !important;
-        }
-        [data-testid="stSidebarHeader"] {
-            position: relative !important;
-            height: 48px !important;
-            min-height: 48px !important;
-            padding: .3rem .45rem !important;
-            overflow: visible !important;
-        }
-
-        /* Botón para cerrar el menú cuando el panel está abierto. */
-        [data-testid="stSidebarCollapseButton"] {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            pointer-events: auto !important;
-            position: absolute !important;
-            top: .2rem !important;
-            right: .35rem !important;
-            width: 42px !important;
-            height: 42px !important;
-            transform: none !important;
-            z-index: 2302 !important;
+            padding: .7rem .75rem 2rem !important;
         }
 
         /*
-           Botón para abrir el menú cuando está cerrado.
-           Se incluyen los nombres usados por versiones antiguas y nuevas
-           de Streamlit para que funcione también al actualizar la plataforma.
+           Menú móvil construido con botones nativos de Streamlit.
+           Es más estable que enlaces HTML dentro de navegadores como WhatsApp.
         */
-        [data-testid="stSidebarCollapsedControl"],
-        [data-testid="collapsedControl"] {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            pointer-events: auto !important;
-            position: fixed !important;
-            top: .55rem !important;
-            left: .55rem !important;
-            width: 44px !important;
-            height: 44px !important;
-            min-width: 44px !important;
-            min-height: 44px !important;
-            margin: 0 !important;
+        .st-key-mobile_navigation_bar {
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 0 .85rem !important;
             padding: 0 !important;
-            background: #092a55 !important;
-            border: 1px solid rgba(255,255,255,.28) !important;
-            border-radius: 11px !important;
-            box-shadow: 0 4px 14px rgba(0,0,0,.22) !important;
-            overflow: visible !important;
-            transform: none !important;
-            z-index: 2305 !important;
         }
-        [data-testid="stSidebarCollapsedControl"] button,
-        [data-testid="collapsedControl"] button,
-        [data-testid="stSidebarCollapseButton"] button {
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            width: 42px !important;
-            height: 42px !important;
-            min-width: 42px !important;
+        .st-key-mobile_navigation_bar [data-testid="stVerticalBlock"] {
+            gap: .42rem !important;
+        }
+        .st-key-mobile_navigation_bar [data-testid="stHorizontalBlock"] {
+            display: grid !important;
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            gap: .42rem !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+        }
+        .st-key-mobile_navigation_bar [data-testid="stHorizontalBlock"] > [data-testid="column"] {
+            display: block !important;
+            flex: none !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+        }
+        .st-key-mobile_navigation_bar [data-testid="stButton"],
+        .st-key-mobile_navigation_bar [data-testid="stButton"] > button {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        .st-key-mobile_navigation_bar [data-testid="stButton"] > button {
             min-height: 42px !important;
+            padding: .42rem .24rem !important;
+            border-radius: 10px !important;
+            font-size: .72rem !important;
+            line-height: 1.05 !important;
+            font-weight: 800 !important;
+            white-space: normal !important;
+        }
+        .st-key-mobile_navigation_bar [data-testid="stMarkdownContainer"] p {
             margin: 0 !important;
-            padding: 0 !important;
-            pointer-events: auto !important;
-        }
-        [data-testid="stSidebarCollapsedControl"] *,
-        [data-testid="collapsedControl"] *,
-        [data-testid="stSidebarCollapseButton"] * {
-            color: white !important;
-            fill: white !important;
-        }
-
-        /* Al abrir el panel se oculta el botón flotante y queda visible el de cierre. */
-        .stApp:has([data-testid="stSidebar"][aria-expanded="true"])
-        [data-testid="stSidebarCollapsedControl"],
-        .stApp:has([data-testid="stSidebar"][aria-expanded="true"])
-        [data-testid="collapsedControl"] {
-            display: none !important;
-        }
-        .sidebar-season {
-            position: absolute !important;
-            left: 1rem !important;
-            right: 1rem !important;
-            bottom: 1rem !important;
-            width: auto !important;
-        }
-        .sidebar-logo-wrap {
-            top: 48px !important;
-            margin: 0 0 8px !important;
-            padding: 2px 0 4px !important;
-        }
-        .sidebar-logo {
-            width: 112px !important;
-            height: 112px !important;
-        }
-        [data-testid="stSidebar"] div[role="radiogroup"] {
-            gap: .24rem !important;
-        }
-        [data-testid="stSidebar"] div[role="radiogroup"] > label {
-            min-height: 40px !important;
-            padding: .3rem 0 !important;
+            line-height: 1.05 !important;
         }
 
         /* Encabezado compacto y legible. */
@@ -1718,6 +1643,14 @@ if sello_uri:
         unsafe_allow_html=True,
     )
 
+MENU_OPTIONS = [
+    "Noticias",
+    "Fixture",
+    "Posiciones",
+    "Clubes",
+    "Goleadores",
+]
+
 with st.sidebar:
     if logo_uri:
         st.markdown(
@@ -1730,14 +1663,9 @@ with st.sidebar:
 
     menu = st.radio(
         "Navegación",
-        [
-            "Noticias",
-            "Fixture",
-            "Posiciones",
-            "Clubes",
-            "Goleadores",
-        ],
+        MENU_OPTIONS,
         label_visibility="collapsed",
+        key="main_navigation",
     )
 
     st.markdown(
@@ -1764,6 +1692,32 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+# Menú exclusivo para teléfonos con controles nativos de Streamlit.
+# Los botones no dependen del sidebar ni de enlaces HTML, por lo que funcionan
+# también dentro de navegadores integrados como WhatsApp, Facebook o Instagram.
+with st.container(key="mobile_navigation_bar"):
+    first_mobile_row = st.columns(3, gap="small")
+    second_mobile_row = st.columns(3, gap="small")
+
+    mobile_layout = [
+        (first_mobile_row[0], "Noticias"),
+        (first_mobile_row[1], "Fixture"),
+        (first_mobile_row[2], "Posiciones"),
+        (second_mobile_row[0], "Clubes"),
+        (second_mobile_row[1], "Goleadores"),
+    ]
+
+    for mobile_column, mobile_option in mobile_layout:
+        with mobile_column:
+            if st.button(
+                mobile_option,
+                key=f"mobile_navigation_{normalize_column_name(mobile_option)}",
+                type="primary" if mobile_option == menu else "secondary",
+                use_container_width=True,
+            ):
+                st.session_state["main_navigation"] = mobile_option
+                st.rerun()
 
 if not available_series:
     available_series = DEFAULT_SERIES.copy()
