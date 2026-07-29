@@ -25,7 +25,7 @@ st.set_page_config(
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 
-BUILD_ID = "ANFA_FOTOS_IGUALES_RECORTE_HONOR_V28"
+BUILD_ID = "ANFA_TABLA_POSICIONES_COMPACTA_V29"
 print(f"[ANFA] Build: {BUILD_ID} | Archivo ejecutado: {Path(__file__).resolve()}")
 
 PREFERRED_EXCEL_NAMES = [
@@ -438,6 +438,62 @@ st.markdown(
     .home-standings-table td:nth-child(2) { width: 22%; }
     .home-standings-table th:nth-child(n+3),
     .home-standings-table td:nth-child(n+3) { width: 8.875%; }
+
+    /* Tabla completa de posiciones: compacta, centrada y sin columna Desc. */
+    .positions-table-wrap {
+        width: 100%;
+        max-width: 1120px;
+        margin: 0 auto 10px;
+        overflow: hidden;
+        background: rgba(13, 17, 24, .97);
+        border: 1px solid rgba(255,255,255,.12);
+        border-radius: 12px;
+        box-shadow: 0 5px 16px rgba(20,45,80,.10);
+    }
+    .positions-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        color: #f4f7fb;
+        font-size: .80rem;
+        line-height: 1.1;
+        font-variant-numeric: tabular-nums;
+    }
+    .positions-table th,
+    .positions-table td {
+        box-sizing: border-box;
+        height: 34px;
+        padding: 5px 1px;
+        text-align: center !important;
+        vertical-align: middle !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        border-right: 1px solid rgba(255,255,255,.11);
+        border-bottom: 1px solid rgba(255,255,255,.11);
+    }
+    .positions-table th {
+        height: 32px;
+        background: #1c2029;
+        color: #aeb8c8;
+        font-weight: 750;
+    }
+    .positions-table th:last-child,
+    .positions-table td:last-child {
+        border-right: 0;
+    }
+    .positions-table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+    .positions-table th:nth-child(1),
+    .positions-table td:nth-child(1) { width: 7%; }
+    .positions-table th:nth-child(2),
+    .positions-table td:nth-child(2) { width: 27%; }
+    .positions-table th:nth-child(n+3),
+    .positions-table td:nth-child(n+3) { width: 8.25%; }
+    .positions-table td:nth-child(2) {
+        font-weight: 650;
+    }
     .match-row {
         display: grid;
         grid-template-columns: 1fr auto 1fr;
@@ -882,6 +938,42 @@ st.markdown(
         .home-standings-table th,
         .home-standings-table td {
             padding: 5px 1px !important;
+        }
+
+        /* La tabla de posiciones cabe completa en el ancho del teléfono. */
+        .positions-table-wrap {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 auto 8px !important;
+            border-radius: 9px !important;
+            overflow: hidden !important;
+        }
+        .positions-table {
+            width: 100% !important;
+            min-width: 0 !important;
+            font-size: clamp(.49rem, 2.15vw, .60rem) !important;
+            letter-spacing: -.01em !important;
+        }
+        .positions-table th,
+        .positions-table td {
+            height: 28px !important;
+            padding: 3px 0 !important;
+            line-height: 1 !important;
+        }
+        .positions-table th {
+            height: 27px !important;
+            font-size: clamp(.47rem, 2vw, .57rem) !important;
+        }
+        .positions-table th:nth-child(1),
+        .positions-table td:nth-child(1) { width: 6% !important; }
+        .positions-table th:nth-child(2),
+        .positions-table td:nth-child(2) { width: 30% !important; }
+        .positions-table th:nth-child(n+3),
+        .positions-table td:nth-child(n+3) { width: 8% !important; }
+        .positions-table td:nth-child(2) {
+            padding-left: 1px !important;
+            padding-right: 1px !important;
+            letter-spacing: -.025em !important;
         }
 
         /* Las columnas de contenido se apilan en móvil. */
@@ -2189,22 +2281,40 @@ elif menu == "Posiciones":
             "de la hoja Inscripciones o asigna partidos a esta serie."
         )
     else:
-        st.dataframe(
-            table,
-            hide_index=True,
-            use_container_width=True,
-            height=38 + (len(table) * 35),
-            column_config={
-                "Pos.": st.column_config.NumberColumn(width="small"),
-                "Club": st.column_config.TextColumn(width="large"),
-                "DESC": st.column_config.NumberColumn("Desc.", help="Descuento de puntos"),
-                "PTS": st.column_config.NumberColumn("PTS", help="Puntos finales"),
-            },
+        # Tabla HTML compacta para controlar el ancho en escritorio y móvil.
+        # Se excluye la columna DESC por solicitud de diseño.
+        position_columns = ["Pos.", "Club", "PJ", "PG", "PE", "PP", "GF", "GC", "DG", "PTS"]
+        position_table = table.drop(columns=["DESC"], errors="ignore").copy()
+        position_table = position_table[
+            [column for column in position_columns if column in position_table.columns]
+        ]
+
+        position_header = "".join(
+            f"<th>{safe_html(column)}</th>" for column in position_table.columns
         )
-        st.caption(
-            "Criterios: puntos, diferencia de gol y goles a favor. "
-            "Los descuentos se leen desde la hoja Tabla_Posiciones."
+        position_rows = []
+        for _, position_row in position_table.iterrows():
+            position_cells = []
+            for column in position_table.columns:
+                value = position_row[column]
+                if column != "Club" and pd.notna(value):
+                    try:
+                        value = int(value)
+                    except (TypeError, ValueError):
+                        pass
+                position_cells.append(f"<td>{safe_html(value)}</td>")
+            position_rows.append("<tr>" + "".join(position_cells) + "</tr>")
+
+        positions_html = (
+            '<div class="positions-table-wrap">'
+            '<table class="positions-table" aria-label="Tabla de posiciones">'
+            f'<thead><tr>{position_header}</tr></thead>'
+            f'<tbody>{"".join(position_rows)}</tbody>'
+            '</table>'
+            '</div>'
         )
+        st.markdown(positions_html, unsafe_allow_html=True)
+        st.caption("Criterios: puntos, diferencia de gol y goles a favor.")
 
 elif menu == "Clubes":
     st.markdown('<div class="section-title">Clubes asociados</div>', unsafe_allow_html=True)
