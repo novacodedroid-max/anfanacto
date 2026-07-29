@@ -25,7 +25,7 @@ st.set_page_config(
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 
-BUILD_ID = "ANFA_NACIMIENTO_MOVIL_HEADER_2026_ALINEADO_V27"
+BUILD_ID = "ANFA_FOTOS_IGUALES_RECORTE_HONOR_V28"
 print(f"[ANFA] Build: {BUILD_ID} | Archivo ejecutado: {Path(__file__).resolve()}")
 
 PREFERRED_EXCEL_NAMES = [
@@ -342,15 +342,19 @@ st.markdown(
     }
     .featured-news-grid {
         display: grid;
-        grid-template-columns: minmax(0, 312px) minmax(0, 440px);
+        grid-template-columns: repeat(2, minmax(0, 420px));
         justify-content: center;
-        align-items: start;
-        gap: 18px;
+        align-items: stretch;
+        gap: 20px;
         width: 100%;
         margin: 2px auto 16px;
     }
     .featured-news-card {
+        display: flex;
+        flex-direction: column;
         width: 100%;
+        max-width: 420px;
+        height: 100%;
         margin: 0 auto;
         background: white;
         border: 1px solid #dce4ef;
@@ -358,28 +362,30 @@ st.markdown(
         overflow: hidden;
         box-shadow: 0 6px 18px rgba(20,45,80,.09);
     }
-    .featured-news-card--honor {
-        max-width: 312px;
-    }
+    .featured-news-card--honor,
     .featured-news-card--ssenior {
-        max-width: 440px;
+        max-width: 420px;
     }
     .featured-news-card img {
         display: block;
         width: 100%;
-        height: auto;
-        object-position: center center;
-    }
-    .featured-news-card--honor img {
-        aspect-ratio: 6 / 7;
+        aspect-ratio: 4 / 3;
         object-fit: cover;
-    }
-    .featured-news-card--ssenior img {
-        aspect-ratio: auto;
-        object-fit: contain;
         background: white;
     }
+    /* Se desplaza el foco hacia abajo para recortar principalmente la parte superior. */
+    .featured-news-card--honor img {
+        object-position: center 64%;
+    }
+    .featured-news-card--ssenior img {
+        object-position: center center;
+    }
     .featured-news-caption {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        min-height: 58px;
         padding: 11px 16px 12px;
         color: #092a55;
         font-size: 1.05rem;
@@ -850,12 +856,25 @@ st.markdown(
         .featured-news-card {
             width: 100% !important;
             max-width: 100% !important;
+            height: 100% !important;
             margin: 0 auto !important;
             border-radius: 13px !important;
         }
+        .featured-news-card img {
+            width: 100% !important;
+            aspect-ratio: 4 / 3 !important;
+            object-fit: cover !important;
+        }
+        .featured-news-card--honor img {
+            object-position: center 64% !important;
+        }
+        .featured-news-card--ssenior img {
+            object-position: center center !important;
+        }
         .featured-news-caption {
-            padding: 10px 12px !important;
-            font-size: .95rem !important;
+            min-height: 66px !important;
+            padding: 10px 8px !important;
+            font-size: .90rem !important;
         }
         .home-standings-table {
             font-size: .61rem !important;
