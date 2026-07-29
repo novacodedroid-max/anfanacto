@@ -25,7 +25,7 @@ st.set_page_config(
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 
-BUILD_ID = "MENU_MOVIL_HORIZONTAL_ESTABLE_V20"
+BUILD_ID = "MENU_MOVIL_VISIBLE_SIN_CAMBIOS_ESCRITORIO_V16"
 print(f"[ANFA] Build: {BUILD_ID} | Archivo ejecutado: {Path(__file__).resolve()}")
 
 PREFERRED_EXCEL_NAMES = [
@@ -725,31 +725,26 @@ st.markdown(
         }
 
         /*
-           Menú móvil horizontal en una sola fila.
-           Cada ítem conserva su ancho y nunca se transforma en texto vertical.
+           Menú móvil construido con botones nativos de Streamlit.
+           Es más estable que enlaces HTML dentro de navegadores como WhatsApp.
         */
         .st-key-mobile_navigation_bar {
             display: block !important;
             width: 100% !important;
             max-width: 100% !important;
-            margin: 0 0 .75rem !important;
+            margin: 0 0 .85rem !important;
             padding: 0 !important;
-            overflow: hidden !important;
         }
-        .st-key-mobile_navigation_bar > [data-testid="stVerticalBlock"],
         .st-key-mobile_navigation_bar [data-testid="stVerticalBlock"] {
-            gap: 0 !important;
+            gap: .42rem !important;
         }
         .st-key-mobile_navigation_bar [data-testid="stHorizontalBlock"] {
             display: grid !important;
-            grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-            flex-wrap: nowrap !important;
-            align-items: stretch !important;
-            gap: .24rem !important;
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            gap: .42rem !important;
             width: 100% !important;
             max-width: 100% !important;
             margin: 0 !important;
-            overflow: visible !important;
         }
         .st-key-mobile_navigation_bar [data-testid="stHorizontalBlock"] > [data-testid="column"] {
             display: block !important;
@@ -757,33 +752,24 @@ st.markdown(
             width: 100% !important;
             min-width: 0 !important;
             max-width: 100% !important;
-            padding: 0 !important;
         }
         .st-key-mobile_navigation_bar [data-testid="stButton"],
         .st-key-mobile_navigation_bar [data-testid="stButton"] > button {
             width: 100% !important;
-            min-width: 0 !important;
             max-width: 100% !important;
         }
         .st-key-mobile_navigation_bar [data-testid="stButton"] > button {
-            min-height: 38px !important;
-            padding: .32rem .08rem !important;
-            border-radius: 9px !important;
-            font-size: clamp(.54rem, 1.85vw, .70rem) !important;
-            line-height: 1 !important;
+            min-height: 42px !important;
+            padding: .42rem .24rem !important;
+            border-radius: 10px !important;
+            font-size: .72rem !important;
+            line-height: 1.05 !important;
             font-weight: 800 !important;
-            white-space: nowrap !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
+            white-space: normal !important;
         }
-        .st-key-mobile_navigation_bar [data-testid="stMarkdownContainer"],
         .st-key-mobile_navigation_bar [data-testid="stMarkdownContainer"] p {
-            min-width: 0 !important;
             margin: 0 !important;
-            line-height: 1 !important;
-            white-space: nowrap !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
+            line-height: 1.05 !important;
         }
 
         /* Encabezado compacto y legible. */
@@ -857,27 +843,21 @@ st.markdown(
             min-width: 0 !important;
         }
 
-        /*
-           Controles del fixture acotados a sus propios contenedores.
-           Antes estas reglas se aplicaban a cualquier fila con botones,
-           incluyendo el menú móvil, y por eso comprimían los extremos.
-        */
-        .st-key-fixture_round_navigation [data-testid="stHorizontalBlock"] {
+        /* Navegación anterior/título/siguiente del fixture en una sola fila. */
+        [data-testid="stHorizontalBlock"]:has([data-testid="stButton"]):not(:has(> [data-testid="column"]:nth-child(4))) {
             display: grid !important;
             grid-template-columns: 48px minmax(0, 1fr) 48px !important;
             align-items: center !important;
             gap: .4rem !important;
-            flex-wrap: nowrap !important;
         }
-        .st-key-fixture_round_navigation [data-testid="stHorizontalBlock"] > [data-testid="column"] {
-            display: block !important;
-            flex: none !important;
+        [data-testid="stHorizontalBlock"]:has([data-testid="stButton"]):not(:has(> [data-testid="column"]:nth-child(4))) > [data-testid="column"] {
             width: auto !important;
             max-width: none !important;
             min-width: 0 !important;
         }
 
-        .st-key-fixture_date_navigation [data-testid="stHorizontalBlock"] {
+        /* Fechas del fixture desplazables horizontalmente, sin comprimirlas. */
+        [data-testid="stHorizontalBlock"]:has(> [data-testid="column"]:nth-child(4)):has([data-testid="stButton"]) {
             display: flex !important;
             flex-wrap: nowrap !important;
             overflow-x: auto !important;
@@ -887,7 +867,7 @@ st.markdown(
             scroll-snap-type: x proximity;
             scrollbar-width: thin;
         }
-        .st-key-fixture_date_navigation [data-testid="stHorizontalBlock"] > [data-testid="column"] {
+        [data-testid="stHorizontalBlock"]:has(> [data-testid="column"]:nth-child(4)):has([data-testid="stButton"]) > [data-testid="column"] {
             flex: 0 0 60px !important;
             width: 60px !important;
             min-width: 60px !important;
@@ -1671,25 +1651,6 @@ MENU_OPTIONS = [
     "Goleadores",
 ]
 
-
-def clear_mobile_menu_parameter() -> None:
-    """Permite que el menú lateral de escritorio vuelva a controlar la página."""
-    if "menu" in st.query_params:
-        del st.query_params["menu"]
-
-
-# El parámetro se procesa antes de crear el radio del sidebar.
-# De esta manera no se modifica el estado de un widget después de instanciarlo.
-requested_menu = st.query_params.get("menu")
-if isinstance(requested_menu, list):
-    requested_menu = requested_menu[0] if requested_menu else None
-
-if requested_menu in MENU_OPTIONS:
-    st.session_state["main_navigation"] = requested_menu
-elif st.session_state.get("main_navigation") not in MENU_OPTIONS:
-    st.session_state["main_navigation"] = MENU_OPTIONS[0]
-
-
 with st.sidebar:
     if logo_uri:
         st.markdown(
@@ -1705,7 +1666,6 @@ with st.sidebar:
         MENU_OPTIONS,
         label_visibility="collapsed",
         key="main_navigation",
-        on_change=clear_mobile_menu_parameter,
     )
 
     st.markdown(
@@ -1733,21 +1693,30 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Menú exclusivo para teléfonos: cinco botones en una sola fila.
-# La navegación se hace por parámetro URL para evitar conflictos con
-# el estado interno del radio que permanece disponible en escritorio.
+# Menú exclusivo para teléfonos con controles nativos de Streamlit.
+# Los botones no dependen del sidebar ni de enlaces HTML, por lo que funcionan
+# también dentro de navegadores integrados como WhatsApp, Facebook o Instagram.
 with st.container(key="mobile_navigation_bar"):
-    mobile_columns = st.columns(5, gap="small")
+    first_mobile_row = st.columns(3, gap="small")
+    second_mobile_row = st.columns(3, gap="small")
 
-    for mobile_column, mobile_option in zip(mobile_columns, MENU_OPTIONS):
+    mobile_layout = [
+        (first_mobile_row[0], "Noticias"),
+        (first_mobile_row[1], "Fixture"),
+        (first_mobile_row[2], "Posiciones"),
+        (second_mobile_row[0], "Clubes"),
+        (second_mobile_row[1], "Goleadores"),
+    ]
+
+    for mobile_column, mobile_option in mobile_layout:
         with mobile_column:
             if st.button(
                 mobile_option,
                 key=f"mobile_navigation_{normalize_column_name(mobile_option)}",
                 type="primary" if mobile_option == menu else "secondary",
-                width="stretch",
+                use_container_width=True,
             ):
-                st.query_params["menu"] = mobile_option
+                st.session_state["main_navigation"] = mobile_option
                 st.rerun()
 
 if not available_series:
@@ -1936,61 +1905,59 @@ elif menu == "Fixture":
             previous_round = valid_rounds[max(0, selected_position - 1)]
             next_round = valid_rounds[min(len(valid_rounds) - 1, selected_position + 1)]
 
-            with st.container(key="fixture_round_navigation"):
-                previous_col, title_col, next_col = st.columns([1, 8, 1], gap="small")
+            previous_col, title_col, next_col = st.columns([1, 8, 1], gap="small")
 
-                with previous_col:
-                    previous_disabled = selected_position == 0
-                    if st.button(
-                        "❮",
-                        key=f"fixture_previous_{normalize_column_name(serie)}",
-                        disabled=previous_disabled,
-                        width="stretch",
-                        help="Fecha anterior",
-                    ):
-                        st.session_state[state_key] = previous_round
-                        st.rerun()
+            with previous_col:
+                previous_disabled = selected_position == 0
+                if st.button(
+                    "❮",
+                    key=f"fixture_previous_{normalize_column_name(serie)}",
+                    disabled=previous_disabled,
+                    width="stretch",
+                    help="Fecha anterior",
+                ):
+                    st.session_state[state_key] = previous_round
+                    st.rerun()
 
-                with title_col:
-                    st.markdown(
-                        f"""
-                        <div class="fixture-round-header">
-                            <div class="fixture-round-kicker">Jornada</div>
-                            <div class="fixture-round-title">
-                                Fecha <span>{selected_round}</span>
-                            </div>
+            with title_col:
+                st.markdown(
+                    f"""
+                    <div class="fixture-round-header">
+                        <div class="fixture-round-kicker">Jornada</div>
+                        <div class="fixture-round-title">
+                            Fecha <span>{selected_round}</span>
                         </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
-                with next_col:
-                    next_disabled = selected_position == len(valid_rounds) - 1
-                    if st.button(
-                        "❯",
-                        key=f"fixture_next_{normalize_column_name(serie)}",
-                        disabled=next_disabled,
-                        width="stretch",
-                        help="Fecha siguiente",
-                    ):
-                        st.session_state[state_key] = next_round
-                        st.rerun()
+            with next_col:
+                next_disabled = selected_position == len(valid_rounds) - 1
+                if st.button(
+                    "❯",
+                    key=f"fixture_next_{normalize_column_name(serie)}",
+                    disabled=next_disabled,
+                    width="stretch",
+                    help="Fecha siguiente",
+                ):
+                    st.session_state[state_key] = next_round
+                    st.rerun()
 
             # Todas las fechas permanecen visibles en una sola fila horizontal.
-            with st.container(key="fixture_date_navigation"):
-                round_columns = st.columns(len(valid_rounds), gap="small")
-                for column, round_number in zip(round_columns, valid_rounds):
-                    with column:
-                        is_selected = round_number == selected_round
-                        if st.button(
-                            f"F{round_number}",
-                            key=f"fixture_round_button_{normalize_column_name(serie)}_{round_number}",
-                            type="primary" if is_selected else "secondary",
-                            width="stretch",
-                            help=f"Ver programación de la Fecha {round_number}",
-                        ):
-                            st.session_state[state_key] = round_number
-                            st.rerun()
+            round_columns = st.columns(len(valid_rounds), gap="small")
+            for column, round_number in zip(round_columns, valid_rounds):
+                with column:
+                    is_selected = round_number == selected_round
+                    if st.button(
+                        f"F{round_number}",
+                        key=f"fixture_round_button_{normalize_column_name(serie)}_{round_number}",
+                        type="primary" if is_selected else "secondary",
+                        width="stretch",
+                        help=f"Ver programación de la Fecha {round_number}",
+                    ):
+                        st.session_state[state_key] = round_number
+                        st.rerun()
 
             selected_matches = dataframe[
                 dataframe["jornada"] == selected_round
